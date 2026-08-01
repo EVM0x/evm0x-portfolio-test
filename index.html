@@ -59,12 +59,6 @@
   .hero-head{display:flex;justify-content:flex-end;padding:20px var(--side-padding);}
   .tagline{font-size:clamp(18px,2.2vw,26px);color:var(--tx);}
   .tagline .cf{color:var(--cc-accent);}
-  .monogram{
-    color:var(--cc-accent);font-weight:700;
-    font-size:clamp(60px,12vw,150px);line-height:.9;
-    padding:10px var(--side-padding);
-    user-select:none;
-  }
   .hero-grid{
     border-top:var(--border);border-bottom:var(--border);
     position:relative;
@@ -78,7 +72,37 @@
   .bl{bottom:0;left:0;border-top:none;border-bottom:2px solid var(--cc-accent);}
   .br{bottom:0;right:0;border-top:none;border-left:none;border-right:2px solid var(--cc-accent);border-bottom:2px solid var(--cc-accent);}
 
-  .col{flex:1;display:flex;flex-direction:column;gap:22px;}
+  /* ---- THUNDER / LIGHTNING OVERLAY (TryKala-style) ---- */
+  .thunder{
+    position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1;
+  }
+  .thunder-bolt{
+    position:absolute;top:-10%;left:10%;width:2px;height:120%;
+    background:linear-gradient(to bottom, transparent, var(--cc-accent), transparent);
+    opacity:0;
+  }
+  .thunder-bolt:nth-child(1){left:18%;animation:lightning 4.2s 0.7s infinite;}
+  .thunder-bolt:nth-child(2){left:58%;width:1.5px;animation:lightning 5.8s 1.9s infinite;}
+  .thunder-bolt:nth-child(3){left:82%;width:1px;animation:lightning 3.6s 3.1s infinite;}
+  .thunder-flash{
+    position:absolute;inset:0;
+    background:radial-gradient(ellipse at 30% 20%, rgba(235,0,4,0.07), transparent 70%);
+    opacity:0;animation:flash 4.2s 0.7s infinite;
+  }
+  @keyframes lightning{
+    0%,90%,96%,100%{opacity:0;}
+    92%{opacity:0.6;}
+    94%{opacity:0;}
+    95%{opacity:0.3;}
+  }
+  @keyframes flash{
+    0%,90%,96%,100%{opacity:0;}
+    92%{opacity:1;}
+    94%{opacity:0;}
+    95%{opacity:0.5;}
+  }
+
+  .col{flex:1;display:flex;flex-direction:column;gap:22px;position:relative;z-index:2;}
   .col-mid{flex:1.5;}
   .block{
     border:var(--border);
@@ -118,22 +142,41 @@
   .project{
     border:var(--border);position:relative;
     display:flex;flex-direction:column;
-    transition:border-color .15s;
+    transition:border-color .3s, transform .3s;
+    will-change:transform;
   }
-  .project:hover{border-color:var(--cc-accent);}
+  .project:hover{
+    border-color:var(--cc-accent);
+    transform:translateY(-3px);
+  }
   .project-thumb{
     aspect-ratio:16/10;border-bottom:var(--border);position:relative;
     background:#0a0a0a;
     overflow:hidden;
   }
-  .project-thumb svg.thumb-art{position:absolute;inset:0;width:100%;height:100%;display:block;}
-  .project-thumb .tl2{position:absolute;top:0;left:0;width:11px;height:11px;border-top:2px solid var(--cc-accent);border-left:2px solid var(--cc-accent);}
+  .project-thumb svg.thumb-art{
+    position:absolute;inset:0;width:100%;height:100%;display:block;
+    transition:transform .4s ease, filter .4s;
+  }
+  .project:hover .project-thumb svg.thumb-art{
+    transform:scale(1.08);
+    filter:brightness(1.15);
+  }
+  /* Hover glow overlay */
+  .project-thumb::after{
+    content:'';position:absolute;inset:0;z-index:2;
+    background:linear-gradient(135deg, rgba(235,0,4,0.08), transparent 60%);
+    opacity:0;transition:opacity .35s;
+    pointer-events:none;
+  }
+  .project:hover .project-thumb::after{opacity:1;}
+  .project-thumb .tl2{position:absolute;top:0;left:0;width:11px;height:11px;border-top:2px solid var(--cc-accent);border-left:2px solid var(--cc-accent);z-index:3;}
   .project-info{padding:clamp(14px,2vw,22px);display:flex;flex-direction:column;gap:12px;}
   .project-info-heading{display:flex;justify-content:space-between;align-items:baseline;}
   .project-info-heading h3{font-size:18px;}
   .project-info-heading h3 .cf{color:var(--cc-accent);}
-  .arrow{color:var(--tx2);font-size:16px;}
-  .project:hover .arrow{color:var(--cc-accent);}
+  .arrow{color:var(--tx2);font-size:16px;transition:transform .25s;}
+  .project:hover .arrow{color:var(--cc-accent);transform:translateX(4px);}
   .project-description{color:#9a9a9a;font-size:13px;line-height:1.7;}
   .project-location{font-size:12px;color:var(--tx2);display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
   .project-location span{border:1px solid #222;padding:3px 8px;font-size:11px;color:#aaa;}
@@ -198,6 +241,12 @@
 </header>
 
 <section class="hero">
+  <div class="thunder">
+    <div class="thunder-bolt"></div>
+    <div class="thunder-bolt"></div>
+    <div class="thunder-bolt"></div>
+    <div class="thunder-flash"></div>
+  </div>
   <div class="hero-head">
     <p class="tagline">Building <span class="cf">Web3 tools</span> for the EVM frontier.</p>
   </div>
@@ -261,7 +310,7 @@
   </div>
 
   <div class="projects">
-    <a class="project" href="https://github.com/EVM0x" target="_blank">
+    <a class="project" href="https://github.com/EVM0x/splitmon" target="_blank">
       <div class="project-thumb"><span class="tl2"></span>
         <svg class="thumb-art" viewBox="0 0 480 300" fill="none" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
           <rect width="480" height="300" fill="#0a0a0a"/>
@@ -270,11 +319,11 @@
             <line x1="0" y1="132" x2="480" y2="132"/><line x1="0" y1="176" x2="480" y2="176"/>
           </g>
           <g font-family="'Cascadia Code',monospace" font-size="13">
-            <text x="22" y="30" fill="#EB0004">$ contract Deploy</text>
-            <text x="22" y="72" fill="#4a4a4a">  function execute() external</text>
-            <text x="22" y="114" fill="#9a9a9a">    return _safely(calldata)</text>
-            <text x="22" y="156" fill="#EB0004">_ ✓ compiled · deployed</text>
-            <text x="22" y="198" fill="#4a4a4a">  tx: 0x7f…c9a4  gas: 89,210</text>
+            <text x="22" y="30" fill="#EB0004">$ contract Split</text>
+            <text x="22" y="72" fill="#4a4a4a">  function splitBill() public</text>
+            <text x="22" y="114" fill="#9a9a9a">    settleWithFriends(amount)</text>
+            <text x="22" y="156" fill="#EB0004">_ ✓ deployed on Monad</text>
+            <text x="22" y="198" fill="#4a4a4a">  Spark Hackathon · 2025</text>
           </g>
           <circle cx="430" cy="190" r="3" fill="#EB0004"/><circle cx="450" cy="218" r="3" fill="#EB0004"/>
           <path d="M28 250 h424" stroke="#1f1f1f"/><circle cx="410" cy="270" r="4" fill="#EB0004"/>
@@ -282,14 +331,14 @@
       </div>
       <div class="project-info">
         <div class="project-info-heading">
-          <h3>EVM <span class="cf">Tooling</span></h3><span class="arrow">→</span>
+          <h3>Split<span class="cf">mon</span></h3><span class="arrow">→</span>
         </div>
-        <p class="project-description">Developer utilities and experiments for EVM-compatible workflows.</p>
-        <div class="project-location"><span>Solidity</span><span>JS</span><span>Node</span></div>
+        <p class="project-description">Onchain bill splitter — split expenses with friends, settle via smart contract on Monad.</p>
+        <div class="project-location"><span>TypeScript</span><span>Solidity</span><span>Monad</span></div>
       </div>
     </a>
 
-    <a class="project" href="https://github.com/EVM0x" target="_blank">
+    <a class="project" href="https://github.com/EVM0x/poker-bot" target="_blank">
       <div class="project-thumb"><span class="tl2"></span>
         <svg class="thumb-art" viewBox="0 0 480 300" fill="none" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
           <rect width="480" height="300" fill="#0a0a0a"/>
@@ -299,39 +348,39 @@
             <line x1="260" y1="220" x2="380" y2="170"/><line x1="120" y1="90" x2="380" y2="170"/>
           </g>
           <g>
-            <circle cx="120" cy="90" r="16" fill="#0a0a0a" stroke="#EB0004"/><text x="120" y="95" font-family="monospace" font-size="13" fill="#EB0004" text-anchor="middle">RPC</text>
-            <circle cx="300" cy="70" r="16" fill="#0a0a0a" stroke="#EB0004"/><text x="300" y="75" font-family="monospace" font-size="13" fill="#EB0004" text-anchor="middle">ABI</text>
-            <circle cx="380" cy="175" r="16" fill="#0a0a0a" stroke="#555"/><text x="380" y="180" font-family="monospace" font-size="13" fill="#aaa" text-anchor="middle">TXN</text>
-            <circle cx="260" cy="222" r="16" fill="#0a0a0a" stroke="#555"/><text x="260" y="227" font-family="monospace" font-size="13" fill="#aaa" text-anchor="middle">LOG</text>
-            <circle cx="180" cy="212" r="16" fill="#0a0a0a" stroke="#555"/><text x="180" y="217" font-family="monospace" font-size="13" fill="#aaa" text-anchor="middle">EVT</text>
+            <circle cx="120" cy="90" r="16" fill="#0a0a0a" stroke="#EB0004"/><text x="120" y="95" font-family="monospace" font-size="13" fill="#EB0004" text-anchor="middle">♠</text>
+            <circle cx="300" cy="70" r="16" fill="#0a0a0a" stroke="#EB0004"/><text x="300" y="75" font-family="monospace" font-size="13" fill="#EB0004" text-anchor="middle">♥</text>
+            <circle cx="380" cy="175" r="16" fill="#0a0a0a" stroke="#555"/><text x="380" y="180" font-family="monospace" font-size="13" fill="#aaa" text-anchor="middle">EV</text>
+            <circle cx="260" cy="222" r="16" fill="#0a0a0a" stroke="#555"/><text x="260" y="227" font-family="monospace" font-size="13" fill="#aaa" text-anchor="middle">AI</text>
+            <circle cx="180" cy="212" r="16" fill="#0a0a0a" stroke="#555"/><text x="180" y="217" font-family="monospace" font-size="13" fill="#aaa" text-anchor="middle">MDP</text>
           </g>
-          <text x="22" y="282" font-family="'Cascadia Code',monospace" font-size="12" fill="#4a4a4a">web3 experiment — chain graph</text>
+          <text x="22" y="282" font-family="'Cascadia Code',monospace" font-size="12" fill="#4a4a4a">poker bot — evm0x bots</text>
         </svg>
       </div>
       <div class="project-info">
         <div class="project-info-heading">
-          <h3>Web3 <span class="cf">Experiments</span></h3><span class="arrow">→</span>
+          <h3>Poker <span class="cf">Bot</span></h3><span class="arrow">→</span>
         </div>
-        <p class="project-description">Chain-connected builds, testnets and interoperability sketches.</p>
-        <div class="project-location"><span>ethers.js</span><span>Hardhat</span><span>EVM</span></div>
+        <p class="project-description">evm0x poker bots — automated poker agents with strategy and EV calculations.</p>
+        <div class="project-location"><span>Python</span><span>Automation</span><span>Game</span></div>
       </div>
     </a>
 
-    <a class="project" href="https://github.com/EVM0x" target="_blank">
+    <a class="project" href="https://github.com/EVM0x/04-zkapp-browser-ui" target="_blank">
       <div class="project-thumb"><span class="tl2"></span>
         <svg class="thumb-art" viewBox="0 0 480 300" fill="none" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
           <rect width="480" height="300" fill="#0a0a0a"/>
           <g font-family="'Cascadia Code',monospace" font-size="12" fill="#4a4a4a">
-            <text x="20" y="24">AUTOMATION / CRON</text>
-            <text x="20" y="72">▶ 07:00  run · sync</text>
-            <text x="20" y="112">▶ 13:00  harvest</text>
-            <text x="20" y="152">▶ 20:00  rebalance</text>
+            <text x="20" y="24">ZKAPP / BROWSER UI</text>
+            <text x="20" y="72">▶  compile   zk-proof</text>
+            <text x="20" y="112">▶  verify     circuit</text>
+            <text x="20" y="152">▶  deploy     browser</text>
           </g>
           <g>
             <rect x="300" y="60" width="150" height="34" fill="none" stroke="#1f1f1f"/>
             <rect x="300" y="60" width="40" height="34" fill="#EB0004"/>
-            <text x="310" y="81" font-family="monospace" font-size="13" fill="#000" font-weight="700">ON</text>
-            <text x="356" y="81" font-family="monospace" font-size="12" fill="#888">loop every 6h</text>
+            <text x="310" y="81" font-family="monospace" font-size="13" fill="#000" font-weight="700">ZK</text>
+            <text x="356" y="81" font-family="monospace" font-size="12" fill="#888">snarkjs · browser</text>
           </g>
           <g stroke="#262626" stroke-width="1.4">
             <path d="M30 230 h80 v40 h80 v-40 h80 v40" fill="none"/>
@@ -339,19 +388,19 @@
             <circle cx="210" cy="254" r="14" fill="#0a0a0a" stroke="#555"/>
             <circle cx="310" cy="214" r="14" fill="#0a0a0a" stroke="#555"/>
           </g>
-          <text x="30" y="290" font-family="'Cascadia Code',monospace" font-size="12" fill="#EB0004">job: auto-ops ✓ active</text>
+          <text x="30" y="290" font-family="'Cascadia Code',monospace" font-size="12" fill="#EB0004">zkapp-ui ✓ browser ready</text>
         </svg>
       </div>
       <div class="project-info">
         <div class="project-info-heading">
-          <h3>Blockchain <span class="cf">Automation</span></h3><span class="arrow">→</span>
+          <h3>zkApp <span class="cf">Browser UI</span></h3><span class="arrow">→</span>
         </div>
-        <p class="project-description">Scripts and workflows that operate across chains and contracts.</p>
-        <div class="project-location"><span>Node</span><span>CLI</span><span>API</span></div>
+        <p class="project-description">Browser-based zero-knowledge application interface for zkApp development.</p>
+        <div class="project-location"><span>TypeScript</span><span>zk</span><span>Frontend</span></div>
       </div>
     </a>
 
-    <a class="project" href="https://github.com/EVM0x" target="_blank">
+    <a class="project" href="https://github.com/EVM0x/green-garden" target="_blank">
       <div class="project-thumb"><span class="tl2"></span>
         <svg class="thumb-art" viewBox="0 0 480 300" fill="none" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
           <rect width="480" height="300" fill="#0a0a0a"/>
@@ -361,35 +410,35 @@
             <line x1="0" y1="200" x2="480" y2="200"/>
           </g>
           <g font-family="'Cascadia Code',monospace" font-size="11" fill="#4a4a4a">
-            <text x="16" y="26">OPEN-TOOLS/</text>
-            <text x="16" y="44">.npmrc .gitignore</text>
-            <text x="136" y="26">src/</text>
-            <text x="136" y="44">index.ts build</text>
-            <text x="256" y="26">bin/</text>
-            <text x="256" y="44">cli.ts</text>
-            <text x="376" y="26">test/</text>
-            <text x="376" y="44">suite.ts</text>
+            <text x="16" y="26">GREEN-GARDEN/</text>
+            <text x="16" y="44">.env  bot.js</text>
+            <text x="136" y="26">scripts/</text>
+            <text x="136" y="44">harvest.ts</text>
+            <text x="256" y="26">cron/</text>
+            <text x="256" y="44">daily.sh</text>
+            <text x="376" y="26">data/</text>
+            <text x="376" y="44">logs.json</text>
           </g>
           <g>
             <rect x="30" y="120" width="104" height="60" fill="none" stroke="#EB0004"/>
-            <text x="42" y="142" font-family="'Cascadia Code',monospace" font-size="12" fill="#EB0004">npm</text>
-            <text x="42" y="162" font-family="'Cascadia Code',monospace" font-size="12" fill="#666">publish</text>
+            <text x="42" y="142" font-family="'Cascadia Code',monospace" font-size="12" fill="#EB0004">auto</text>
+            <text x="42" y="162" font-family="'Cascadia Code',monospace" font-size="12" fill="#666">farm</text>
             <rect x="150" y="120" width="104" height="60" fill="none" stroke="#555"/>
-            <text x="162" y="142" font-family="'Cascadia Code',monospace" font-size="12" fill="#ccc">docs</text>
-            <text x="162" y="162" font-family="'Cascadia Code',monospace" font-size="12" fill="#666">readme</text>
+            <text x="162" y="142" font-family="'Cascadia Code',monospace" font-size="12" fill="#ccc">cron</text>
+            <text x="162" y="162" font-family="'Cascadia Code',monospace" font-size="12" fill="#666">daily</text>
             <rect x="270" y="120" width="104" height="60" fill="none" stroke="#555"/>
-            <text x="282" y="142" font-family="'Cascadia Code',monospace" font-size="12" fill="#ccc">OSS</text>
-            <text x="282" y="162" font-family="'Cascadia Code',monospace" font-size="12" fill="#666">MIT · free</text>
+            <text x="282" y="142" font-family="'Cascadia Code',monospace" font-size="12" fill="#ccc">v3</text>
+            <text x="282" y="162" font-family="'Cascadia Code',monospace" font-size="12" fill="#666">optimized</text>
           </g>
-          <text x="30" y="286" font-family="'Cascadia Code',monospace" font-size="12" fill="#EB0004">pkg: open-src ✓ v1.2.0</text>
+          <text x="30" y="286" font-family="'Cascadia Code',monospace" font-size="12" fill="#EB0004">green garden 🌱 active</text>
         </svg>
       </div>
       <div class="project-info">
         <div class="project-info-heading">
-          <h3>Open <span class="cf">Tools</span></h3><span class="arrow">→</span>
+          <h3>Green <span class="cf">Garden</span></h3><span class="arrow">→</span>
         </div>
-        <p class="project-description">Small, useful open-source utilities published for the community.</p>
-        <div class="project-location"><span>JS</span><span>Open Source</span></div>
+        <p class="project-description">Automation and monitoring — 🌱 automated farming script ecosystem.</p>
+        <div class="project-location"><span>Shell</span><span>Cron</span><span>Automation</span></div>
       </div>
     </a>
   </div>
@@ -414,6 +463,9 @@
     <span class="chip">React</span>
     <span class="chip">Next.js</span>
     <span class="chip">Tailwind CSS</span>
+    <span class="chip">Python</span>
+    <span class="chip">zk-SNARKs</span>
+    <span class="chip">Monad</span>
     <span class="chip">Git</span>
     <span class="chip">Automation</span>
   </div>
